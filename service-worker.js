@@ -1,6 +1,21 @@
+const storageCache = { count: 0 };
+
 chrome.tabs.onCreated.addListener(blockDuplicateTabs);
+chrome.storage.onChanged.addListener(listenForUserConfigChanges)
+
+async function initStorageCache() {
+    const config = await chrome.storage.sync.get();
+    Object.assign(storageCache, config);
+}
 
 async function blockDuplicateTabs(createdTab) {
+
+    try {
+        await initStorageCache();
+    } catch (error) {
+        console.log(error);
+    }
+
     const createdTabUrl = createdTab.pendingUrl;
     const createdTabId = createdTab.id; 
     const currentTabsQueryOption = { active: false, lastFocusedWindow: true};
@@ -39,4 +54,11 @@ function findDuplicateTabs(createdTabUrl) {
         console.log(createdTabUrl, "===", currentTabUrl);
         return createdTabUrl === tab.url;
     };
+}
+
+
+async function listenForUserConfigChanges(configChanges, namespace) {
+
+    console.log("User config changed:", configChanges, namespace)
+
 }
