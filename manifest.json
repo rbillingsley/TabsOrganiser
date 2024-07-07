@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "Tab Organiser",
+    "version": "0.1",
+    "host_permissions": [
+        "https://*/*",
+        "http://*/*"
+    ],
+    "permissions": [
+        "tabs",
+        "tabGroups"
+    ],
+    "background": {
+        "service_worker": "service-worker.js",
+        "type": "module"
+    }
+  }
