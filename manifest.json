@@ -1,22 +1,15 @@
 {
-    "manifest_version": 3,
-    "name": "Tab Organiser",
-    "version": "0.1",
-    "host_permissions": [
-        "https://*/*",
-        "http://*/*"
-    ],
-    "permissions": [
-        "tabs",
-        "tabGroups",
-        "storage"
-    ],
-    "background": {
-        "service_worker": "service-worker.js",
-        "type": "module"
-    },
-    "options_ui": {
-        "page": "options.html",
-        "open_in_tab": false
-    }
+  "manifest_version": 3,
+  "name": "Tab Organiser",
+  "version": "0.1",
+  "host_permissions": ["https://*/*", "http://*/*"],
+  "permissions": ["tabs", "tabGroups", "storage"],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
   }
+}
