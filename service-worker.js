@@ -1,11 +1,14 @@
-const storageCache = { count: 0 };
+import { UserConfig } from './user-config.js'
+
+const storageCache = new UserConfig;
 
 chrome.tabs.onCreated.addListener(blockDuplicateTabs);
 chrome.storage.onChanged.addListener(listenForUserConfigChanges);
 
 async function initStorageCache() {
-  const config = await chrome.storage.sync.get();
-  Object.assign(storageCache, config);
+  const storage = await chrome.storage.sync.get();
+  Object.assign(storageCache, storage.userConfig);
+  console.log("init UserConfig", storageCache);
 }
 
 async function blockDuplicateTabs(createdTab) {
@@ -13,6 +16,11 @@ async function blockDuplicateTabs(createdTab) {
     await initStorageCache();
   } catch (error) {
     console.log(error);
+  }
+
+  if (storageCache.enableBlocking === false)
+  {
+    return;
   }
 
   const createdTabUrl = createdTab.pendingUrl;
@@ -55,5 +63,6 @@ function findDuplicateTabs(createdTabUrl) {
 }
 
 async function listenForUserConfigChanges(configChanges, namespace) {
+  Object.assign(storageCache, configChanges.userConfig.newValue);
   console.log("User config changed:", configChanges, namespace);
 }

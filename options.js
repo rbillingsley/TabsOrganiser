@@ -1,25 +1,32 @@
+import { UserConfig } from './user-config.js'
+
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.getElementById("save").addEventListener("click", saveOptions);
 
 function restoreOptions() {
-  chrome.storage.sync.get({ urls: [] }, initialiseConfig());
+  let configObject = new UserConfig; 
+  chrome.storage.sync.get({ userConfig: configObject }, initialiseConfig());
 }
 
 function initialiseConfig() {
-  return (config) => {
-    console.log(config);
-    document.getElementById("url").value = config.urls[0];
+  return (configObject) => {
+    console.log("Initialised config:", configObject);
+    let blockingCheckbox = document.getElementById("enable-blocking");
+    let urlInput = document.getElementById("url");
+    blockingCheckbox.checked = configObject.userConfig.enableBlocking;
+
+    urlInput.value = configObject.userConfig.urls[0];
   };
 }
 
 function saveOptions() {
-  const url = document.getElementById("url").value;
-  const urlOptions = [];
-  urlOptions.push(url);
+  let configObject = new UserConfig;
+  configObject.enableBlocking = document.getElementById("enable-blocking").checked;
+  configObject.urls.push(document.getElementById("url").value);
 
-  console.log(urlOptions);
+  console.log("Saved config:", configObject);
 
-  chrome.storage.sync.set({ urls: urlOptions }, updateSyncStatus());
+  chrome.storage.sync.set({ userConfig: configObject }, updateSyncStatus());
 }
 
 function updateSyncStatus() {
