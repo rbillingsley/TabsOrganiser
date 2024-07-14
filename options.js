@@ -1,40 +1,54 @@
-import { UserConfig } from './user-config.js'
+import { UserConfig } from "./user-config.js";
 
-document.addEventListener("DOMContentLoaded", restoreOptions);
-document.getElementById("save").addEventListener("click", saveOptions);
-
-function restoreOptions() {
-  let configObject = new UserConfig; 
-  chrome.storage.sync.get({ userConfig: configObject }, initialiseConfig());
+export function restoreOptions(callback) {
+  chrome.storage.sync.get().then((storage) => {
+    let configObject = new UserConfig();
+    configObject.fromStorage(storage.userConfig);
+    console.log("restore UserConfig", configObject, storage.userConfig);
+    callback(configObject);
+  });
 }
 
-function initialiseConfig() {
-  return (configObject) => {
-    console.log("Initialised config:", configObject);
-    let blockingCheckbox = document.getElementById("enable-blocking");
-    let urlInput = document.getElementById("url");
-    blockingCheckbox.checked = configObject.userConfig.enableBlocking;
-
-    urlInput.value = configObject.userConfig.urls[0];
-  };
-}
-
-function saveOptions() {
-  let configObject = new UserConfig;
-  configObject.enableBlocking = document.getElementById("enable-blocking").checked;
+export function gatherOptions(callback) {
+  let configObject = new UserConfig();
+  configObject.enableBlocking =
+    document.getElementById("enable-blocking").checked;
   configObject.urls.push(document.getElementById("url").value);
 
-  console.log("Saved config:", configObject);
-
-  chrome.storage.sync.set({ userConfig: configObject }, updateSyncStatus());
+  validateOptions(configObject, callback);
 }
 
-function updateSyncStatus() {
-  return () => {
-    const status = document.getElementById("status");
-    status.textContent = "Options saved.";
-    setTimeout(() => {
-      status.textContent = "";
-    }, 750);
-  };
+export function resetOptions(callback) {
+  let configObject = new UserConfig();
+  saveOptions(configObject, callback);
+}
+
+export function addUrlToBlockList(url, configObject, callback) {
+  console.log("url to block", url, configObject);
+
+  if (url.startsWith("chrome-extension://")) {
+    // ignore chrome extension popup urls
+    return;
+  }
+
+  if (configObject.urls.includes(url)) {
+    // ignore duplicates, basic array string check for now
+    return;
+  }
+
+  configObject.urls.push(url);
+
+  validateOptions(configObject, callback);
+}
+
+function validateOptions(configObject, callback) {
+  console.log("Validated config:", configObject);
+
+  saveOptions(configObject, callback);
+}
+
+function saveOptions(configObject, callback) {
+  console.log("Saved config:", configObject);
+
+  chrome.storage.sync.set({ userConfig: configObject }, callback);
 }
