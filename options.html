@@ -2,25 +2,45 @@
 <html>
   <head>
     <title>Tabs Organiser Options</title>
+    <link rel="stylesheet" href="/assets/main.css">
   </head>
-  <body>
-    <h1>Block duplicate tabs</h1>
-    <input type="checkbox" id="enable-blocking" />
-    <h1>URL Wildcards:</h1>
-    <input
-      type="url"
-      name="url"
-      id="url"
-      placeholder="https://example.com"
-      pattern="https://.*"
-      size="30"
-      required
-    />
-
-    <div id="status"></div>
-    <button id="save">Save</button>
-    <button id="reset">Reset</button>
-
+  <body class="theme">
+    <div>
+      <h1>Tab Organiser</h1>
+      <div class="list">
+        <div class="entry">
+          <p class="subentry">Block duplicate tabs</p>
+          <input class="subentry" type="checkbox" id="enable-blocking" />
+        </div>
+        <div class="entry">
+          <p class="subentry">Block duplicate tabs on all windows</p>
+          <input class="subentry" type="checkbox" id="all-windows" />
+        </div> 
+      </div>
+      <div class="list">
+        <div>
+          <p>URL Wildcards:</p>
+          <div class="entry">
+            <input
+              class="subentry"
+              type="url"
+              name="url"
+              id="url"
+              placeholder="https://example.com"
+              pattern="https://.*"
+              required
+            />
+            <input class="subentry" type="button" id="add-button" value="+"/>
+            <input class="subentry" type="button" id="remove-button" value="-"/>
+          </div>
+        </div>
+      </div>
+      <div id="status"></div>
+      <div class="entry">
+        <button id="save">Save</button>
+        <button id="reset">Reset</button>
+      </div>
+    </div>
     <script type="module" src="options-ui.js"></script>
   </body>
 </html>

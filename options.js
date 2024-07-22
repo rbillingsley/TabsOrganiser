@@ -9,13 +9,9 @@ export function restoreOptions(callback) {
   });
 }
 
-export function gatherOptions(callback) {
-  let configObject = new UserConfig();
-  configObject.enableBlocking =
-    document.getElementById("enable-blocking").checked;
-  configObject.urls.push(document.getElementById("url").value);
-
+export function storeOptions(configObject,callback) {
   validateOptions(configObject, callback);
+  saveOptions(configObject, callback);
 }
 
 export function resetOptions(callback) {
@@ -38,13 +34,12 @@ export function addUrlToBlockList(url, configObject, callback) {
 
   configObject.urls.push(url);
 
-  validateOptions(configObject, callback);
+  validateOptions(configObject);
+  saveOptions(configObject, callback)
 }
 
-function validateOptions(configObject, callback) {
+function validateOptions(configObject) {
   console.log("Validated config:", configObject);
-
-  saveOptions(configObject, callback);
 }
 
 function saveOptions(configObject, callback) {

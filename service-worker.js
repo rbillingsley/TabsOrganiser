@@ -76,39 +76,62 @@ async function blockDuplicateTabs(createdTab) {
     return;
   }
 
+  const createdTabWindowId = createdTab.windowId;
   const createdTabUrl = createdTab.pendingUrl;
-  if (doesCreatedTabMatchSettingsFilter(createdTabUrl))
-  {
+  if (doesCreatedTabMatchSettingsFilter(createdTabUrl)) {
     return;
   }
 
   const createdTabId = createdTab.id;
-  const currentTabs = await chrome.tabs.query({
-    active: false,
-    lastFocusedWindow: true,
-  });
+  let tabQueryOptions;
+  if (storageCache.allWindows) {
+    tabQueryOptions = {};
+  } else {
+    tabQueryOptions = {
+      active: false,
+    };
+  }
+
+  let currentTabs = await chrome.tabs.query(tabQueryOptions);
 
   console.log("Tab created:", createdTab);
   console.log("Tabs:", currentTabs);
 
-  const existingTabIndices = currentTabs
+  let existingTabs = currentTabs
     .filter(findDuplicateTabs(createdTabUrl))
-    .map((tab) => tab.index)
     .reverse();
 
-  console.log("Existing Tabs:", existingTabIndices);
+  console.log("Existing Tabs:", existingTabs);
 
-  if (existingTabIndices.length > 0) {
+  if (existingTabs.length > 0) {
+    const tabsByWindow = Map.groupBy(existingTabs, ({ windowId }) => windowId)
+    
+    console.log("Tabs by Window:", tabsByWindow);
+
+    // map tabs by window id, so we highlight existing tab(s) in the appropriate window
+    let windowId;
+    if (tabsByWindow.has(createdTabWindowId))
+    {
+      windowId = createdTabWindowId;
+    } else {
+      // if tab isn't open in the window the tab was automatically added to, fallback to the first other tab
+      windowId = tabsByWindow.keys[0];
+    }
+
+    existingTabs = tabsByWindow.get(windowId);
+    console.log("Existing Tabs In Window:", existingTabs);
+
+    let existingTabIndices = existingTabIndices.map((tab) => tab.index)
+    console.log("Existing Tabs Indices In Window:", existingTabIndices);
     // close the new tab as we already have one open
     await chrome.tabs.remove(createdTabId);
     console.log("Removed Tab:", createdTabId, createdTab);
 
     const tabsToHighlight = {
       tabs: existingTabIndices,
+      windowId: windowId,
     };
-
     console.log("Tabs to highlight:", tabsToHighlight);
-
     // highlight and focus the existing tab(s)
     await chrome.tabs.highlight(tabsToHighlight);
   }

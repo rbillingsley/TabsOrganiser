@@ -1,0 +1,53 @@
+body,h1,h2,h3,h4,h5,h6,p,blockquote,pre,hr,dl,dd,ol,ul,figure {
+    margin: 0;
+    padding: 0;
+    display: unset;
+}
+
+html {
+    overflow-y: scroll
+}
+
+body {
+    font-family:  Arial,sans-serif;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-feature-settings: "kern" 1;
+    -moz-font-feature-settings: "kern" 1;
+    -o-font-feature-settings: "kern" 1;
+    font-feature-settings: "kern" 1;
+    font-kerning: normal
+}
+
+h1,h2,h3,h4,h5,h6,p,blockquote,pre,ul,ol,dl,figure,.highlight {
+    margin-bottom: 15px
+}
+.entry{
+    display: block;
+    width: 250px;
+}
+
+.subentry{
+    display: inline;
+}
+
+.theme {
+    color: #fdfdfd;
+    background-color: #111;
+}
+
+@media (prefers-color-scheme: light) {
+    .theme {
+        color: #111;
+        background-color: #fdfdfd;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .theme {
+        color: #fdfdfd;
+        background-color: #111;
+    }
+}
+
