@@ -5,10 +5,13 @@ const enableBlockingId = "enable-blocking";
 const allWindowsId = "all-windows";
 const urlId = "url";
 const statusId = "status";
+const saveId = "save";
+const resetId = "reset";
+const clickId = "click"
 
 document.addEventListener("DOMContentLoaded", onContentLoaded);
-document.getElementById("save").addEventListener("click", onSaveClicked);
-document.getElementById("reset").addEventListener("click", onResetClicked);
+document.getElementById(saveId).addEventListener(clickId, onSaveClicked);
+document.getElementById(resetId).addEventListener(clickId, onResetClicked);
 
 function onContentLoaded() {
   restoreOptions(initialiseConfig());
@@ -51,11 +54,9 @@ function gatherOptions(callback) {
 }
 
 function updateSyncStatus() {
-  return () => {
-    const status = document.getElementById(statusId);
-    status.textContent = "Options saved.";
-    setTimeout(() => {
-      status.textContent = "";
-    }, 750);
-  };
-}
+  const status = document.getElementById(statusId);
+  status.textContent = "Options saved.";
+  setTimeout(() => {
+    status.textContent = "";
+  }, 750);
+};
