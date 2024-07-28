@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Tabs Organiser Options</title>
-    <link rel="stylesheet" href="/assets/main.css">
+    <link rel="stylesheet" href="/assets/main.css" />
   </head>
   <body class="theme">
     <div>
@@ -15,7 +15,7 @@
         <div class="entry">
           <p class="subentry">Block duplicate tabs on all windows</p>
           <input class="subentry" type="checkbox" id="all-windows" />
-        </div> 
+        </div>
       </div>
       <div class="list">
         <div>
@@ -30,9 +30,20 @@
               pattern="https://.*"
               required
             />
-            <input class="subentry" type="button" id="add-button" value="+"/>
-            <input class="subentry" type="button" id="remove-button" value="-"/>
+            <input class="subentry" type="button" id="add-button" value="+" />
+            <input
+              class="subentry"
+              type="button"
+              id="remove-button"
+              value="-"
+            />
           </div>
+          <a
+            href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns"
+            title="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns"
+          >
+            Help</a
+          >
         </div>
       </div>
       <div id="status"></div>

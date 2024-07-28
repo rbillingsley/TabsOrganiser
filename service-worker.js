@@ -78,16 +78,15 @@ async function blockDuplicateTabs(createdTab) {
 
   const createdTabWindowId = createdTab.windowId;
   const createdTabUrl = createdTab.pendingUrl;
-  if (doesCreatedTabMatchSettingsFilter(createdTabUrl)) {
-    return;
-  }
-
   const createdTabId = createdTab.id;
   let tabQueryOptions;
   if (storageCache.allWindows) {
-    tabQueryOptions = {};
+    tabQueryOptions = {
+      url: storageCache.urls,
+    };
   } else {
     tabQueryOptions = {
+      url: storageCache.urls,
       active: false,
     };
   }
@@ -97,9 +96,7 @@ async function blockDuplicateTabs(createdTab) {
   console.log("Tab created:", createdTab);
   console.log("Tabs:", currentTabs);
 
-  let existingTabs = currentTabs
-    .filter(findDuplicateTabs(createdTabUrl))
-    .reverse();
+  let existingTabs = currentTabs.reverse();
 
   console.log("Existing Tabs:", existingTabs);
 
@@ -143,19 +140,6 @@ async function blockDuplicateTabs(createdTab) {
     // highlight and focus the existing tab(s)
     await chrome.tabs.highlight(tabsToHighlight);
   }
-}
-
-function doesCreatedTabMatchSettingsFilter(createdTabUrl) {
-  // basic comparison for now
-  return !storageCache.urls.includes(createdTabUrl);
-}
-
-function findDuplicateTabs(createdTabUrl) {
-  return (tab) => {
-    let currentTabUrl = tab.url;
-    console.log(createdTabUrl, "===", currentTabUrl);
-    return createdTabUrl === tab.url;
-  };
 }
 
 async function listenForUserConfigChanges(configChanges, namespace) {
