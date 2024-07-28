@@ -7,7 +7,7 @@ const urlId = "url";
 const statusId = "status";
 const saveId = "save";
 const resetId = "reset";
-const clickId = "click"
+const clickId = "click";
 
 document.addEventListener("DOMContentLoaded", onContentLoaded);
 document.getElementById(saveId).addEventListener(clickId, onSaveClicked);
@@ -30,7 +30,7 @@ function initialiseConfig() {
     console.log("Initialised config:", config);
 
     let blockingCheckbox = document.getElementById(enableBlockingId);
-    let allWindows = document.getElementById(allWindowsId); 
+    let allWindows = document.getElementById(allWindowsId);
     let urlInput = document.getElementById(urlId);
 
     blockingCheckbox.checked = config.enableBlocking;
@@ -46,8 +46,7 @@ function gatherOptions(callback) {
   let configObject = new UserConfig();
   configObject.enableBlocking =
     document.getElementById(enableBlockingId).checked;
-  configObject.allWindows =
-    document.getElementById(allWindowsId).checked; 
+  configObject.allWindows = document.getElementById(allWindowsId).checked;
   configObject.urls.push(document.getElementById(urlId).value);
 
   storeOptions(configObject, callback);
@@ -59,4 +58,4 @@ function updateSyncStatus() {
   setTimeout(() => {
     status.textContent = "";
   }, 750);
-};
+}

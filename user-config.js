@@ -5,8 +5,8 @@ export class UserConfig {
 
   fromStorage(storage) {
     this.enableBlocking = storage?.enableBlocking ?? false;
-    this.allWindows = storage?.allWindows ?? false; 
-    this.urls = storage?.urls ?? {};
+    this.allWindows = storage?.allWindows ?? false;
+    this.urls = storage?.urls ?? [];
 
     console.log("fromStorage", this, storage);
   }

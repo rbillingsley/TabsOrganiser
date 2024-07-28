@@ -104,24 +104,32 @@ async function blockDuplicateTabs(createdTab) {
   console.log("Existing Tabs:", existingTabs);
 
   if (existingTabs.length > 0) {
-    const tabsByWindow = Map.groupBy(existingTabs, ({ windowId }) => windowId)
-    
+    const tabsByWindow = Map.groupBy(existingTabs, ({ windowId }) => windowId);
+
     console.log("Tabs by Window:", tabsByWindow);
 
     // map tabs by window id, so we highlight existing tab(s) in the appropriate window
     let windowId;
-    if (tabsByWindow.has(createdTabWindowId))
-    {
+    if (tabsByWindow.has(createdTabWindowId)) {
       windowId = createdTabWindowId;
     } else {
       // if tab isn't open in the window the tab was automatically added to, fallback to the first other tab
-      windowId = tabsByWindow.keys[0];
+      const keys = tabsByWindow.keys();
+      if (keys.length < 1) {
+        console.error(
+          "Unable to resolve source window for existing tab:",
+          createdTabUrl
+        );
+        return;
+      }
+
+      windowId = keys.next().value;
     }
 
     existingTabs = tabsByWindow.get(windowId);
     console.log("Existing Tabs In Window:", existingTabs);
 
-    let existingTabIndices = existingTabIndices.map((tab) => tab.index)
+    let existingTabIndices = existingTabs.map((tab) => tab.index);
     console.log("Existing Tabs Indices In Window:", existingTabIndices);
     // close the new tab as we already have one open
     await chrome.tabs.remove(createdTabId);
