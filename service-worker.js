@@ -96,7 +96,9 @@ async function blockDuplicateTabs(createdTab) {
   console.log("Tab created:", createdTab);
   console.log("Tabs:", currentTabs);
 
-  let existingTabs = currentTabs.reverse();
+  let existingTabs = currentTabs
+    .filter((tab) => createdTabUrl === tab.url)
+    .reverse();
 
   console.log("Existing Tabs:", existingTabs);
 
@@ -123,14 +125,18 @@ async function blockDuplicateTabs(createdTab) {
       windowId = keys.next().value;
     }
 
-    existingTabs = tabsByWindow.get(windowId);
-    console.log("Existing Tabs In Window:", existingTabs);
-
-    let existingTabIndices = existingTabs.map((tab) => tab.index);
-    console.log("Existing Tabs Indices In Window:", existingTabIndices);
     // close the new tab as we already have one open
     await chrome.tabs.remove(createdTabId);
     console.log("Removed Tab:", createdTabId, createdTab);
+
+    existingTabs = tabsByWindow.get(windowId);
+    console.log("Existing Tabs In Window:", existingTabs);
+
+    // if we're searching all windows, the newly created tab is in the collection but we just removed the actual tab
+    existingTabs = existingTabs.filter((tab) => tab.id != createdTabId);
+
+    let existingTabIndices = existingTabs.map((tab) => tab.index);
+    console.log("Existing Tabs Indices In Window:", existingTabIndices);
 
     const tabsToHighlight = {
       tabs: existingTabIndices,
