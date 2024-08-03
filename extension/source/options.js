@@ -48,9 +48,6 @@ function validateOptions(configObject, successCallback, errorCallback) {
     errorCallback
   );
 
-  errorCallback("Test");
-  return;
-
   saveOptions(configObject, successCallback, errorCallback);
 }
 

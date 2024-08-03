@@ -91,7 +91,13 @@ async function blockDuplicateTabs(createdTab) {
     };
   }
 
-  let currentTabs = await chrome.tabs.query(tabQueryOptions);
+  let currentTabs;
+  try {
+    currentTabs = await chrome.tabs.query(tabQueryOptions);
+  } catch (error) {
+    console.error(error);
+    return;
+  }
 
   console.log("Tab created:", createdTab);
   console.log("Tabs:", currentTabs);
