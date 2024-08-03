@@ -14,15 +14,15 @@ document.getElementById(saveId).addEventListener(clickId, onSaveClicked);
 document.getElementById(resetId).addEventListener(clickId, onResetClicked);
 
 function onContentLoaded() {
-  restoreOptions(initialiseConfig());
+  restoreOptions(initialiseConfig);
 }
 
 function onSaveClicked() {
-  gatherOptions(updateSyncStatus());
+  gatherOptions(updateSyncStatusSuccess, updateSyncStatusError);
 }
 
 function onResetClicked() {
-  resetOptions(updateSyncStatus());
+  resetOptions(updateSyncStatusSuccess);
 }
 
 function initialiseConfig() {
@@ -42,19 +42,29 @@ function initialiseConfig() {
   };
 }
 
-function gatherOptions(callback) {
+function gatherOptions(successCallback, errorCallback) {
   let configObject = new UserConfig();
   configObject.enableBlocking =
     document.getElementById(enableBlockingId).checked;
   configObject.allWindows = document.getElementById(allWindowsId).checked;
   configObject.urls.push(document.getElementById(urlId).value);
 
-  storeOptions(configObject, callback);
+  console.log("Gathered config:", configObject, successCallback, errorCallback);
+
+  storeOptions(configObject, successCallback, errorCallback);
 }
 
-function updateSyncStatus() {
+function updateSyncStatusSuccess() {
   const status = document.getElementById(statusId);
-  status.textContent = "Options saved.";
+  status.textContent = "Options save success.";
+  setTimeout(() => {
+    status.textContent = "";
+  }, 750);
+}
+
+function updateSyncStatusError(errorDetails) {
+  const status = document.getElementById(statusId);
+  status.textContent = "Options save failed. " + errorDetails;
   setTimeout(() => {
     status.textContent = "";
   }, 750);

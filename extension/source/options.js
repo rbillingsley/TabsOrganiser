@@ -9,9 +9,8 @@ export function restoreOptions(callback) {
   });
 }
 
-export function storeOptions(configObject,callback) {
-  validateOptions(configObject, callback);
-  saveOptions(configObject, callback);
+export function storeOptions(configObject, successCallback, errorCallback) {
+  validateOptions(configObject, successCallback, errorCallback);
 }
 
 export function resetOptions(callback) {
@@ -19,7 +18,7 @@ export function resetOptions(callback) {
   saveOptions(configObject, callback);
 }
 
-export function addUrlToBlockList(url, configObject, callback) {
+export function addUrlToBlockList(url, configObject) {
   console.log("url to block", url, configObject);
 
   if (url.startsWith("chrome-extension://")) {
@@ -34,16 +33,29 @@ export function addUrlToBlockList(url, configObject, callback) {
 
   configObject.urls.push(url);
 
-  validateOptions(configObject);
-  saveOptions(configObject, callback)
+  validateOptions(
+    configObject,
+    () => {},
+    () => {}
+  );
 }
 
-function validateOptions(configObject) {
-  console.log("Validated config:", configObject);
+function validateOptions(configObject, successCallback, errorCallback) {
+  console.log(
+    "Validated config:",
+    configObject,
+    successCallback,
+    errorCallback
+  );
+
+  errorCallback("Test");
+  return;
+
+  saveOptions(configObject, successCallback, errorCallback);
 }
 
-function saveOptions(configObject, callback) {
-  console.log("Saved config:", configObject);
+function saveOptions(configObject, successCallback, errorCallback) {
+  console.log("Saved config:", configObject, successCallback, errorCallback);
 
-  chrome.storage.sync.set({ userConfig: configObject }, callback);
+  chrome.storage.sync.set({ userConfig: configObject }, successCallback);
 }
