@@ -13,28 +13,34 @@
           <input class="subentry" type="checkbox" id="enable-blocking" />
         </div>
         <div class="entry">
-          <p class="subentry">Block duplicate tabs on all windows</p>
+          <p class="subentry">Block duplicate tabs across all windows</p>
           <input class="subentry" type="checkbox" id="all-windows" />
         </div>
       </div>
       <div class="list">
-        <div>
+        <div id="url-list">
           <p>URL Wildcards:</p>
-          <div class="entry">
+          <div class="entry" id="url-slot">
             <input
               class="subentry"
               type="url"
               name="url"
               id="url"
-              placeholder="https://example.com"
-              pattern="https://.*"
+              placeholder="*://*/*"
               required
             />
-            <input class="subentry" type="button" id="add-button" value="+" />
+            <input
+              class="subentry"
+              type="button"
+              id="add-button"
+              name="add-button"
+              value="+"
+            />
             <input
               class="subentry"
               type="button"
               id="remove-button"
+              name="remove-button"
               value="-"
             />
           </div>

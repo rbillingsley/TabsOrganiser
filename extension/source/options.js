@@ -4,7 +4,12 @@ export function restoreOptions(callback) {
   chrome.storage.sync.get().then((storage) => {
     let configObject = new UserConfig();
     configObject.fromStorage(storage.userConfig);
-    console.log("restore UserConfig", configObject, storage.userConfig);
+    console.log(
+      "restore UserConfig",
+      configObject,
+      storage.userConfig,
+      callback
+    );
     callback(configObject);
   });
 }

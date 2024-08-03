@@ -3,7 +3,11 @@ import { restoreOptions, storeOptions, resetOptions } from "./options.js";
 
 const enableBlockingId = "enable-blocking";
 const allWindowsId = "all-windows";
+const urlListId = "url-list";
+const urlSlotId = "url-slot";
 const urlId = "url";
+const addButtonId = "add-button";
+const removeButtonId = "remove-button";
 const statusId = "status";
 const saveId = "save";
 const resetId = "reset";
@@ -25,21 +29,78 @@ function onResetClicked() {
   resetOptions(updateSyncStatusSuccess);
 }
 
-function initialiseConfig() {
-  return (config) => {
-    console.log("Initialised config:", config);
+function onAddClicked(e) {
+  let newSlot = addURLSlot(e.srcElement.parentElement);
+  setURLValue("", newSlot);
+  updateUrlListEntries();
+}
 
-    let blockingCheckbox = document.getElementById(enableBlockingId);
-    let allWindows = document.getElementById(allWindowsId);
-    let urlInput = document.getElementById(urlId);
+function onRemoveClicked(e) {
+  e.srcElement.parentElement.remove();
+  updateUrlListEntries();
+}
 
-    blockingCheckbox.checked = config.enableBlocking;
-    allWindows.checked = config.allWindows;
+function initialiseConfig(config) {
+  console.log("Initialised config:", config);
 
-    if (config.urls.length > 0) {
-      urlInput.value = config.urls[0];
-    }
-  };
+  document.getElementById(enableBlockingId).checked = config.enableBlocking;
+  document.getElementById(allWindowsId).checked = config.allWindows;
+
+  const originUrlSlot = document.getElementById(urlSlotId);
+
+  let lastSlot = originUrlSlot;
+  for (let i = 1; i < config.urls.length; i++) {
+    lastSlot = addURLSlot(lastSlot);
+  }
+
+  updateUrlListValues(config);
+  updateUrlListEntries();
+}
+
+function addURLSlot(originUrlSlot) {
+  let newSlot = originUrlSlot.cloneNode(true);
+  originUrlSlot.after(newSlot);
+  return newSlot;
+}
+
+function updateUrlListEntries() {
+  let urlListChildren = getUrlListElements();
+  for (let i = 0; i < urlListChildren.length; i++) {
+    updateElements(i, urlListChildren[i]);
+  }
+}
+
+function updateUrlListValues(config) {
+  let urlListChildren = getUrlListElements();
+  for (let i = 0; i < config.urls.length; i++) {
+    setURLValue(config.urls[i], urlListChildren[i]);
+  }
+}
+
+function getUrlListElements() {
+  const urlList = document.getElementById(urlListId);
+  return urlList.getElementsByClassName("entry");
+}
+
+function setURLValue(url, element) {
+  let urlInput = element.querySelector(`input[name=\"${urlId}\"`);
+  urlInput.value = url;
+}
+
+function updateElements(index, element) {
+  element.id = `${urlSlotId}-${index}`;
+  let urlInput = element.querySelector(`input[name=\"${urlId}\"`);
+  let addButton = element.querySelector(`input[name=\"${addButtonId}\"`);
+  let removeButton = element.querySelector(`input[name=\"${removeButtonId}\"`);
+
+  urlInput.id = `${urlId}-${index}`;
+  addButton.id = `${addButtonId}-${index}`;
+  removeButton.id = `${removeButtonId}-${index}`;
+
+  addButton.removeEventListener(clickId, onAddClicked);
+  addButton.addEventListener(clickId, onAddClicked);
+  removeButton.removeEventListener(clickId, onAddClicked);
+  removeButton.addEventListener(clickId, onRemoveClicked);
 }
 
 function gatherOptions(successCallback, errorCallback) {
@@ -47,7 +108,11 @@ function gatherOptions(successCallback, errorCallback) {
   configObject.enableBlocking =
     document.getElementById(enableBlockingId).checked;
   configObject.allWindows = document.getElementById(allWindowsId).checked;
-  configObject.urls.push(document.getElementById(urlId).value);
+
+  const urlElements = document.querySelectorAll(`input[name=\"${urlId}\"`);
+  for (const urlElement of urlElements) {
+    configObject.urls.push(urlElement.value);
+  }
 
   console.log("Gathered config:", configObject, successCallback, errorCallback);
 
