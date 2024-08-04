@@ -27,8 +27,14 @@ async function onInstalled() {
   });
 
   await chrome.contextMenus.create({
+    title: "Block duplicate tabs for page",
+    contexts: ["page"],
+    id: blockPageContextId,
+  });
+
+  await chrome.contextMenus.create({
     title: "Override blocked tabs for recent page",
-    contexts: ["action"],
+    contexts: ["action", "page"],
     id: blockOverrideParentActionContextId,
     enabled: false,
     visible: false,
@@ -39,19 +45,13 @@ async function onInstalled() {
     const childId = `${blockOverrideChildActionContextId}${i}`;
     await chrome.contextMenus.create({
       title: title,
-      contexts: ["action"],
+      contexts: ["action", "page"],
       id: childId,
       parentId: blockOverrideParentActionContextId,
       enabled: false,
       visible: false,
     });
   }
-
-  await chrome.contextMenus.create({
-    title: "Block duplicate tabs for page",
-    contexts: ["page"],
-    id: blockPageContextId,
-  });
 
   await chrome.contextMenus.create({
     title: "Block duplicate tabs for link",
