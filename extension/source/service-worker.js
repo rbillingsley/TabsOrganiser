@@ -195,15 +195,28 @@ async function blockDuplicateTabs(createdTab) {
     return;
   }
 
-  let existingTabs = currentTabs
-    .filter((tab) => createdTabUrl === tab.url)
-    .reverse();
+  currentTabs = currentTabs.filter((tab) => createdTabUrl === tab.url);
 
-  if (existingTabs.length === 0) {
+  if (currentTabs.length === 0) {
     return;
   }
 
-  const tabsByWindow = Map.groupBy(existingTabs, ({ windowId }) => windowId);
+  // close the new tab as we already have one open
+  await chrome.tabs.remove(createdTabId);
+
+  // requery tabs now that we've removed the duplicate
+  try {
+    currentTabs = await chrome.tabs.query(tabQueryOptions);
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+
+  currentTabs = currentTabs
+    .filter((tab) => createdTabUrl === tab.url)
+    .reverse();
+
+  const tabsByWindow = Map.groupBy(currentTabs, ({ windowId }) => windowId);
 
   // map tabs by window id, so we highlight existing tab(s) in the appropriate window
   let windowId;
@@ -223,16 +236,11 @@ async function blockDuplicateTabs(createdTab) {
     windowId = keys.next().value;
   }
 
-  // close the new tab as we already have one open
-  await chrome.tabs.remove(createdTabId);
+  currentTabs = tabsByWindow.get(windowId);
 
-  existingTabs = tabsByWindow.get(windowId);
-  // if we're searching all windows, the newly created tab is in the collection but we just removed the actual tab
-  existingTabs = existingTabs.filter((tab) => tab.id != createdTabId);
-
-  let existingTabIndices = existingTabs.map((tab) => tab.index);
+  let tabIndices = currentTabs.map((tab) => tab.index);
   const tabsToHighlight = {
-    tabs: existingTabIndices,
+    tabs: tabIndices,
     windowId: windowId,
   };
 
