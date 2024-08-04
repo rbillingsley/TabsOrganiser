@@ -4,12 +4,7 @@ export function restoreOptions(callback) {
   chrome.storage.sync.get().then((storage) => {
     let configObject = new UserConfig();
     configObject.fromStorage(storage.userConfig);
-    console.log(
-      "restore UserConfig",
-      configObject,
-      storage.userConfig,
-      callback
-    );
+
     callback(configObject);
   });
 }
@@ -24,8 +19,6 @@ export function resetOptions(callback) {
 }
 
 export function addUrlToBlockList(url, configObject) {
-  console.log("url to block", url, configObject);
-
   if (url.startsWith("chrome-extension://")) {
     // ignore chrome extension popup urls
     return;
@@ -46,18 +39,9 @@ export function addUrlToBlockList(url, configObject) {
 }
 
 function validateOptions(configObject, successCallback, errorCallback) {
-  console.log(
-    "Validated config:",
-    configObject,
-    successCallback,
-    errorCallback
-  );
-
   saveOptions(configObject, successCallback, errorCallback);
 }
 
 function saveOptions(configObject, successCallback, errorCallback) {
-  console.log("Saved config:", configObject, successCallback, errorCallback);
-
   chrome.storage.sync.set({ userConfig: configObject }, successCallback);
 }

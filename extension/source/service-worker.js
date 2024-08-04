@@ -61,8 +61,6 @@ async function onInstalled() {
 }
 
 async function contextMenuOnClicked(info) {
-  console.log("context clicked", info);
-
   if (info.parentMenuItemId) {
     resolveUrlForBlockOverride(info);
   } else {
@@ -77,7 +75,6 @@ async function updateRecentlyBlockedList(url, sessionConfig) {
 
   const firstUpdate = sessionConfig.blockedUrls.length === 0;
   if (firstUpdate) {
-    console.log("Update Parent:", blockOverrideParentActionContextId);
     const updateProperties = {
       enabled: true,
       visible: true,
@@ -93,7 +90,6 @@ async function updateRecentlyBlockedList(url, sessionConfig) {
   for (let i = 0; i < sessionCache.blockedUrls.length; i++) {
     const urlTitle = sessionCache.blockedUrls[i];
     const childId = `${blockOverrideChildActionContextId}${i}`;
-    console.log("Update Child:", urlTitle, childId);
     const updateProperties = {
       title: urlTitle,
       enabled: true,
@@ -110,17 +106,12 @@ async function resolveUrlForBlockOverride(info) {
     blockOverrideChildActionContextId.length
   );
 
-  console.log("indexString", indexString);
   const index = parseInt(indexString);
-  console.log("index", index);
-
   if (index < 0 || index >= sessionCache.blockedUrls.length) {
     return;
   }
 
   sessionCache.overrideUrl = sessionCache.blockedUrls[index];
-  console.log("overrideUrl", sessionCache.overrideUrl);
-
   chrome.tabs.create({ url: sessionCache.overrideUrl });
 }
 
@@ -149,26 +140,18 @@ async function resolveUrlForBlockList(info) {
 async function initStorageCache() {
   chrome.storage.sync.get().then((persistentStorage) => {
     storageCache.fromStorage(persistentStorage.userConfig);
-    console.log("init UserConfig", storageCache, persistentStorage.userConfig);
   });
 
   chrome.storage.session.get().then((sessionStorage) => {
     sessionCache.fromStorage(sessionStorage.sessionConfig);
-    console.log(
-      "init SessionConfig",
-      sessionCache,
-      sessionStorage.sessionConfig
-    );
   });
 }
 
 async function listenForUserConfigChanges(configChanges, namespace) {
   if (configChanges.userConfig) {
     Object.assign(storageCache, configChanges.userConfig.newValue);
-    console.log("User config changed:", storageCache, namespace);
   } else if (configChanges.userConfig) {
     Object.assign(sessionCache, configChanges.sessionConfig.newValue);
-    console.log("Session config changed:", sessionCache, namespace);
   }
 }
 
@@ -176,7 +159,7 @@ async function blockDuplicateTabs(createdTab) {
   try {
     await initStorageCache();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   if (storageCache.enableBlocking === false) {
@@ -212,22 +195,15 @@ async function blockDuplicateTabs(createdTab) {
     return;
   }
 
-  console.log("Tab created:", createdTab);
-  console.log("Tabs:", currentTabs);
-
   let existingTabs = currentTabs
     .filter((tab) => createdTabUrl === tab.url)
     .reverse();
-
-  console.log("Existing Tabs:", existingTabs);
 
   if (existingTabs.length === 0) {
     return;
   }
 
   const tabsByWindow = Map.groupBy(existingTabs, ({ windowId }) => windowId);
-
-  console.log("Tabs by Window:", tabsByWindow);
 
   // map tabs by window id, so we highlight existing tab(s) in the appropriate window
   let windowId;
@@ -249,22 +225,17 @@ async function blockDuplicateTabs(createdTab) {
 
   // close the new tab as we already have one open
   await chrome.tabs.remove(createdTabId);
-  console.log("Removed Tab:", createdTabId, createdTab);
 
   existingTabs = tabsByWindow.get(windowId);
-  console.log("Existing Tabs In Window:", existingTabs);
-
   // if we're searching all windows, the newly created tab is in the collection but we just removed the actual tab
   existingTabs = existingTabs.filter((tab) => tab.id != createdTabId);
 
   let existingTabIndices = existingTabs.map((tab) => tab.index);
-  console.log("Existing Tabs Indices In Window:", existingTabIndices);
-
   const tabsToHighlight = {
     tabs: existingTabIndices,
     windowId: windowId,
   };
-  console.log("Tabs to highlight:", tabsToHighlight);
+
   // highlight and focus the existing tab(s)
   await chrome.tabs.highlight(tabsToHighlight);
 

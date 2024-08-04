@@ -41,8 +41,6 @@ function onRemoveClicked(e) {
 }
 
 function initialiseConfig(config) {
-  console.log("Initialised config:", config);
-
   document.getElementById(enableBlockingId).checked = config.enableBlocking;
   document.getElementById(allWindowsId).checked = config.allWindows;
 
@@ -113,8 +111,6 @@ function gatherOptions(successCallback, errorCallback) {
   for (const urlElement of urlElements) {
     configObject.urls.push(urlElement.value);
   }
-
-  console.log("Gathered config:", configObject, successCallback, errorCallback);
 
   storeOptions(configObject, successCallback, errorCallback);
 }

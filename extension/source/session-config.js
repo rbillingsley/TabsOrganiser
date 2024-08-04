@@ -5,8 +5,6 @@ export class SessionConfig {
 
   fromStorage(storage) {
     this.blockedUrls = storage?.blockedUrls ?? [];
-
-    console.log("fromStorage", this, storage);
   }
 
   validBlockedUrl(url) {
@@ -16,12 +14,9 @@ export class SessionConfig {
   addBlockedUrl(url) {
     this.blockedUrls.splice(0, 0, url);
 
-    console.log("blockedUrls", this.blockedUrls);
-
     let urlsToDrop = this.blockedUrls.length - maxBlockedUrls;
     for (urlsToDrop; urlsToDrop > 0; urlsToDrop--) {
       const droppedUrl = this.blockedUrls.pop();
-      console.log("droppedUrl", droppedUrl);
     }
   }
 
