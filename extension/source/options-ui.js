@@ -36,8 +36,14 @@ function onAddClicked(e) {
 }
 
 function onRemoveClicked(e) {
-  e.srcElement.parentElement.remove();
-  updateUrlListEntries();
+  // get all url input elements
+  const urlElements = document.querySelectorAll(`input[name=\"${urlId}\"`);
+  if (urlElements.length === 1) {
+    urlElements[0].value = "";
+  } else {
+    e.srcElement.parentElement.remove();
+    updateUrlListEntries();
+  }
 }
 
 function initialiseConfig(config) {
