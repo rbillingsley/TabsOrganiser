@@ -26,7 +26,8 @@ function onSaveClicked() {
 }
 
 function onResetClicked() {
-  resetOptions(updateSyncStatusSuccess);
+  resetOptions(resetSyncStatusSuccess);
+  restoreOptions(initialiseConfig);
 }
 
 function onAddClicked(e) {
@@ -36,8 +37,7 @@ function onAddClicked(e) {
 }
 
 function onRemoveClicked(e) {
-  // get all url input elements
-  const urlElements = document.querySelectorAll(`input[name=\"${urlId}\"`);
+  const urlElements = getAllUrlInputElements();
   if (urlElements.length === 1) {
     urlElements[0].value = "";
   } else {
@@ -50,9 +50,17 @@ function initialiseConfig(config) {
   document.getElementById(enableBlockingId).checked = config.enableBlocking;
   document.getElementById(allWindowsId).checked = config.allWindows;
 
-  const originUrlSlot = document.getElementById(urlSlotId);
+  // reset input elements
+  const urlElements = getAllUrlInputElements();
+  if (urlElements.length >= 1) {
+    urlElements[0].value = "";
 
-  let lastSlot = originUrlSlot;
+    for (let i = 1; i < urlElements.length; i++) {
+      urlElements[i].parentNode.remove();
+    }
+  }
+
+  let lastSlot = document.getElementById(urlSlotId);
   for (let i = 1; i < config.urls.length; i++) {
     lastSlot = addURLSlot(lastSlot);
   }
@@ -86,6 +94,10 @@ function getUrlListElements() {
   return urlList.getElementsByClassName("entry");
 }
 
+function getAllUrlInputElements() {
+  return document.querySelectorAll(`input[name=\"${urlId}\"`);
+}
+
 function setURLValue(url, element) {
   let urlInput = element.querySelector(`input[name=\"${urlId}\"`);
   urlInput.value = url;
@@ -113,12 +125,20 @@ function gatherOptions(successCallback, errorCallback) {
     document.getElementById(enableBlockingId).checked;
   configObject.allWindows = document.getElementById(allWindowsId).checked;
 
-  const urlElements = document.querySelectorAll(`input[name=\"${urlId}\"`);
+  const urlElements = getAllUrlInputElements();
   for (const urlElement of urlElements) {
     configObject.urls.push(urlElement.value);
   }
 
   storeOptions(configObject, successCallback, errorCallback);
+}
+
+function resetSyncStatusSuccess() {
+  const status = document.getElementById(statusId);
+  status.textContent = "Options reset success.";
+  setTimeout(() => {
+    status.textContent = "";
+  }, 750);
 }
 
 function updateSyncStatusSuccess() {
@@ -131,7 +151,7 @@ function updateSyncStatusSuccess() {
 
 function updateSyncStatusError(errorDetails) {
   const status = document.getElementById(statusId);
-  status.textContent = "Options save failed. " + errorDetails;
+  status.textContent = `Options save failed: \"${errorDetails}\"`;
   setTimeout(() => {
     status.textContent = "";
   }, 750);

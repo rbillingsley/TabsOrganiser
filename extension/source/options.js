@@ -1,7 +1,7 @@
 import { UserConfig } from "./user-config.js";
 
-export function restoreOptions(callback) {
-  chrome.storage.sync.get().then((storage) => {
+export async function restoreOptions(callback) {
+  await chrome.storage.sync.get().then((storage) => {
     let configObject = new UserConfig();
     configObject.fromStorage(storage.userConfig);
 
@@ -42,6 +42,6 @@ function validateOptions(configObject, successCallback, errorCallback) {
   saveOptions(configObject, successCallback, errorCallback);
 }
 
-function saveOptions(configObject, successCallback, errorCallback) {
-  chrome.storage.sync.set({ userConfig: configObject }, successCallback);
+async function saveOptions(configObject, successCallback, errorCallback) {
+  await chrome.storage.sync.set({ userConfig: configObject }, successCallback);
 }
